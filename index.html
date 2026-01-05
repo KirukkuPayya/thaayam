@@ -3,137 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Professional Thaayam</title>
+    <title>Thaayam Online</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
-        /* ---------------- CSS STYLES ---------------- */
         body {
             background-color: #1a1a1a;
             color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             margin: 0;
             padding: 10px;
+            overflow: hidden; /* ஸ்க்ரால் ஆகாமல் இருக்க */
         }
 
-        h2 { margin: 5px; color: gold; text-shadow: 1px 1px 2px black; }
+        h2 { margin: 5px; color: gold; font-size: 18px; }
 
-        /* போர்டு டிசைன் (CSS Grid) - 11x11 */
+        /* போர்டு டிசைன் */
         .board-container {
             display: grid;
-            grid-template-columns: repeat(11, 1fr); /* 11 கட்டங்கள் வரிசையாக */
+            grid-template-columns: repeat(11, 1fr);
             grid-template-rows: repeat(11, 1fr);
-            gap: 2px;
-            width: 340px;
-            height: 340px;
-            margin: 20px 0;
-            background-color: transparent;
+            gap: 1px;
+            width: 95vw; /* திரைக்கு ஏற்ற அளவு */
+            height: 95vw;
+            max-width: 350px;
+            max-height: 350px;
+            margin: 10px 0;
         }
 
         .cell {
-            background-color: #e0c9a6; /* சந்தன நிறம் */
+            background-color: #e0c9a6;
             border: 1px solid #5c4033;
             border-radius: 2px;
             position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 8px;
-            color: black;
         }
-
-        /* வெற்று இடங்கள் (Corners) - மறைக்க */
-        .empty {
-            background-color: transparent;
-            border: none;
-        }
-
-        /* பாதுகாப்பு கட்டங்கள் (Safe Zones / X Box) */
+        .empty { background-color: transparent; border: none; }
         .safe {
-            background-color: #ffccbc;
             background-image: linear-gradient(45deg, transparent 48%, red 49%, red 51%, transparent 52%),
                               linear-gradient(-45deg, transparent 48%, red 49%, red 51%, transparent 52%);
+            background-color: #ffccbc;
         }
-        .center-box {
-            background-color: gold;
-            border: 2px solid red;
-        }
+        .center-box { background-color: gold; border: 2px solid red; }
 
-        /* காய்கள் (Coins) */
+        /* காய்கள் */
         .coin {
-            width: 14px;
-            height: 14px;
+            width: 70%; height: 70%;
             border-radius: 50%;
             position: absolute;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Smooth Animation */
-            box-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+            box-shadow: 1px 1px 3px black;
             z-index: 10;
             border: 1px solid white;
+            transition: all 0.3s ease;
         }
-
         .red-coin { background: radial-gradient(circle, #ff4d4d, #990000); }
         .blue-coin { background: radial-gradient(circle, #4d94ff, #003399); }
 
         /* கண்ட்ரோல் பேனல் */
         .controls {
             background: #333;
-            padding: 15px;
+            padding: 10px;
             border-radius: 15px;
             text-align: center;
             width: 90%;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.5);
+            position: relative;
         }
 
         .dice-box {
-            font-size: 50px;
-            height: 60px;
-            margin: 10px;
+            font-size: 40px;
+            height: 50px;
+            margin: 5px;
             color: #fff;
-            text-shadow: 0 0 10px gold;
         }
 
         button {
             background: linear-gradient(to right, #ff416c, #ff4b2b);
             border: none;
-            padding: 12px 30px;
+            padding: 10px 30px;
             color: white;
-            font-size: 18px;
-            border-radius: 25px;
+            font-size: 16px;
+            border-radius: 20px;
             cursor: pointer;
             font-weight: bold;
-            box-shadow: 0 4px 15px rgba(255, 75, 43, 0.4);
         }
-        button:active { transform: scale(0.95); }
+        button:disabled { background: gray; cursor: not-allowed; }
 
-        .status { font-size: 16px; margin-bottom: 5px; color: #bbb; }
+        .status { font-size: 14px; margin-bottom: 5px; color: #bbb; }
         .p1-turn { color: #ff4d4d; font-weight: bold; }
         .p2-turn { color: #4d94ff; font-weight: bold; }
-
+        
+        #player-names {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 <body>
 
-    <h2>Professional Thaayam 🎲</h2>
+    <h2>Online Thaayam 🎲</h2>
+    
+    <div id="player-names">
+        <span style="color:#ff4d4d" id="p1-name">🔴 Waiting...</span>
+        <span style="color:#4d94ff" id="p2-name">🔵 Waiting...</span>
+    </div>
 
-    <div class="board-container" id="board">
-        </div>
-
-    <div id="r0" class="coin red-coin" style="display:none"></div>
-    <div id="r1" class="coin red-coin" style="display:none"></div>
-    <div id="r2" class="coin red-coin" style="display:none"></div>
-    <div id="r3" class="coin red-coin" style="display:none"></div>
-
-    <div id="b0" class="coin blue-coin" style="display:none"></div>
-    <div id="b1" class="coin blue-coin" style="display:none"></div>
-    <div id="b2" class="coin blue-coin" style="display:none"></div>
-    <div id="b3" class="coin blue-coin" style="display:none"></div>
+    <div class="board-container" id="board"></div>
 
     <div class="controls">
-        <div id="status-text" class="status p1-turn">🔴 Player 1 முறை</div>
+        <div id="status-text" class="status">Connecting...</div>
         <div class="dice-box" id="dice">🎲</div>
-        <button onclick="rollDice()">ROLL</button>
+        <button onclick="rollDice()" id="rollBtn" disabled>ROLL</button>
     </div>
 
     <script src="script.js"></script>
