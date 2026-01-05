@@ -7,8 +7,11 @@ from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 # உங்கள் Bot Token (பழையது அப்படியே இருக்கட்டும்)
 BOT_TOKEN = "7820753162:AAFJxxsgtrPbI8e57NhKoCPc628jzrDi8AA"
 
-# உங்கள் புதிய GitHub Pages லிங்க் (சரியான லிங்க் சேர்க்கப்பட்டுள்ளது)
-WEB_APP_URL = "https://kirukkupayya.github.io/thaayam/"
+# பழைய வரி:
+# WEB_APP_URL = "https://kirukkupayya.github.io/thaayam/"
+
+# புதிய வரி (கடைசியில் ?v=2 என்று சேர்க்கவும்):
+WEB_APP_URL = "https://kirukkupayya.github.io/thaayam/?v=2"
 
 # ----------------------------------------------- #
 
