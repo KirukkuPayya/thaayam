@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Thaayam Game</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { 
+            margin: 0; 
+            padding: 0; 
+            background-color: #222; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            color: white; 
+            font-family: sans-serif;
+        }
+        #game-board {
+            position: relative;
+            width: 350px; /* உங்கள் படத்தின் அளவுக்கு ஏற்ப மாற்றலாம் */
+            height: 350px;
+            margin-top: 20px;
+            background-image: url('board.jpg'); /* உங்கள் படம் */
+            background-size: cover;
+            border: 2px solid gold;
+        }
+        .coin {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            position: absolute;
+            transition: all 0.5s ease; /* இதுதான் அனிமேஷன்! */
+            box-shadow: 0 0 5px black;
+        }
+        #player1 { background-color: red; top: 45%; left: 45%; } /* ஆரம்ப இடம் */
+        #controls { margin-top: 20px; text-align: center; }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #0088cc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>தாயக்கட்டம் 🎲</h2>
+    
+    <div id="game-board">
+        <div id="player1" class="coin"></div>
+    </div>
+
+    <div id="controls">
+        <h3 id="status">Roll பண்ணுங்க!</h3>
+        <button onclick="rollDice()">🎲 Roll Dice</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
